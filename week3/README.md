@@ -241,25 +241,25 @@ deleteTask(1);
 Before submitting, test all features:
 
 ### Backend API:
-- [ ] GET `/api/tasks` returns all tasks
-- [ ] GET `/api/tasks/:id` returns single task
-- [ ] GET `/api/tasks/999` returns 404 (not found)
-- [ ] POST `/api/tasks` with valid data creates task
-- [ ] POST `/api/tasks` with empty title returns 400
-- [ ] PUT `/api/tasks/:id` updates task
-- [ ] DELETE `/api/tasks/:id` deletes task
-- [ ] PATCH `/api/tasks/:id/status` updates status
-- [ ] PATCH with invalid status returns 400
+- [✅] GET `/api/tasks` returns all tasks
+- [✅] GET `/api/tasks/:id` returns single task
+- [✅] GET `/api/tasks/999` returns 404 (not found)
+- [✅] POST `/api/tasks` with valid data creates task
+- [✅] POST `/api/tasks` with empty title returns 400
+- [✅] PUT `/api/tasks/:id` updates task
+- [✅] DELETE `/api/tasks/:id` deletes task
+- [✅] PATCH `/api/tasks/:id/status` updates status
+- [✅] PATCH with invalid status returns 400
 
 ### Frontend:
-- [ ] Page loads without errors
-- [ ] Tasks are displayed in correct columns
-- [ ] Can create new task via form
-- [ ] Can move task between columns
-- [ ] Can delete task with confirmation
-- [ ] Filter dropdown works correctly
-- [ ] Task counters update correctly
-- [ ] No console errors in DevTools
+- [✅] Page loads without errors
+- [✅] Tasks are displayed in correct columns
+- [✅] Can create new task via form
+- [✅] Can move task between columns
+- [✅] Can delete task with confirmation
+- [✅] Filter dropdown works correctly
+- [✅] Task counters update correctly
+- [✅] No console errors in DevTools
 
 ---
 
