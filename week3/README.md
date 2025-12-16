@@ -1,446 +1,111 @@
-# 🎯 Week 3 Starter Code - Task Board Monolithic
+## 📝 Lab 1: Analyze Real System Architecture (Due: 1 สัปดาห์)
+### วัตถุประสงค์:
 
-**ENGSE207 Software Architecture - Week 3 Lab**
+* **วิเคราะห์สถาปัตยกรรมของระบบจริง**
+* **ฝึกการระบุ Architectural Styles**
+#### โจทย์: เลือกระบบหนึ่งจากตัวเลือกด้านล่าง และวิเคราะห์สถาปัตยกรรม
 
----
+--- 
+### ระบบที่เลือก **Mobile Banking**  นาย ภานุวัฒน์ ต๋าคำ รหัส 67543210044-3
+--- 
 
-## 📋 Overview
 
-This is a **starter code template** for building a Task Board application with Monolithic Architecture. You will implement the missing parts following the TODO comments in the code.
+## 1. System Overview (ภาพรวมระบบ) **ระบบนี้ทำอะไร?**
+ระบบ Mobile Banking เป็นแอปพลิเคชันที่ช่วยให้ลูกค้าธนาคารสามารถทำธุรกรรมทางการเงินได้ด้วยตนเองผ่านสมาร์ทโฟน โดยไม่ต้องเดินทางไปที่สาขา ฟีเจอร์หลักประกอบด้วย:
 
----
+* **Authentication:** การยืนยันตัวตน (Login, PIN, Biometric).
+* **Account Management:** ดูยอดเงินคงเหลือ, ดูรายการเดินบัญชี (Statement).
+* **Transactions:** โอนเงิน, จ่ายบิล, เติมเงิน.
+* **Notifications:** แจ้งเตือนเงินเข้า-ออก.
 
-## 🎓 Learning Objectives
+**Stakeholders หลักคือใคร?**
 
-By completing this lab, you will:
+1. **End Users (ลูกค้า):** ผู้ใช้งานแอปพลิเคชันเพื่อทำธุรกรรม
+2. **Bank Administrators/Support:** เจ้าหน้าที่ดูแลระบบและฝ่ายบริการลูกค้า
+3. **Regulatory Bodies (ธนาคารแห่งประเทศไทย):** ผู้วางกฎระเบียบและมาตรฐานความปลอดภัย
+4. **Third-party Partners:** เช่น ผู้ให้บริการเครือข่ายมือถือ, บริษัทสาธารณูปโภค (ค่าน้ำ/ไฟ)
 
-1. ✅ Understand Monolithic Architecture structure
-2. ✅ Build a full-stack application with Node.js + Express
-3. ✅ Implement REST API endpoints
-4. ✅ Use SQLite database with Node.js
-5. ✅ Create interactive frontend with vanilla JavaScript
-6. ✅ Practice asynchronous programming (async/await)
+**Quality Attributes (QAs) สำคัญอะไรบ้าง? (Non-functional Requirements)**
 
----
-
-## 📁 Project Structure
-
-```
-week3-starter-code/
-├── server.js              # Backend server (TODO: Implement routes)
-├── package.json           # Dependencies (Complete ✓)
-├── .gitignore            # Git ignore file (Complete ✓)
-├── database/
-│   └── schema.sql        # Database schema (Complete ✓)
-├── public/
-│   ├── index.html        # Frontend HTML (Complete ✓)
-│   ├── style.css         # Styles (Complete ✓)
-│   └── app.js            # Frontend JS (TODO: Implement logic)
-└── README.md             # This file
-```
-
-### 📊 What You Need to Complete:
-
-| File | Status | Description |
-|------|--------|-------------|
-| `server.js` | ⚠️ **TODO** | Implement 13 parts (API routes, etc.) |
-| `public/app.js` | ⚠️ **TODO** | Implement 14 parts (frontend logic) |
-| `database/schema.sql` | ✅ Complete | Database schema ready to use |
-| `public/index.html` | ✅ Complete | HTML structure ready |
-| `public/style.css` | ✅ Complete | All styles provided |
+* **Security (ความปลอดภัย):** *สำคัญที่สุด* ข้อมูลการเงินต้องถูกเข้ารหัส ป้องกันการแฮ็ก
+* **Availability (ความพร้อมใช้งาน):** ระบบต้องล่มยาก (High Availability) ใช้งานได้ 24/7
+* **Performance (ประสิทธิภาพ):** การตอบสนองต้องรวดเร็ว (Low Latency) รองรับผู้ใช้จำนวนมากพร้อมกันได้
+* **Usability (ความง่ายในการใช้):** หน้าตาแอปฯ ต้องใช้งานง่าย ไม่ซับซ้อน
 
 ---
 
-## 🚀 Quick Start
+## 2. Architecture Analysis (วิเคราะห์สถาปัตยกรรม) **Architectural Styles ที่เลือกใช้:**
 
-### Step 1: Install Dependencies
+1. **Microservices Architecture:** แยกฟังก์ชันการทำงานออกเป็นบริการย่อยๆ (Services) ที่เป็นอิสระต่อกัน
+2. **Event-Driven Architecture:** ใช้สำหรับการประมวลผลแบบ Asynchronous (เช่น การแจ้งเตือน หรือบันทึก Transaction logs)
 
-```bash
-npm install
-```
+**แผนภาพสถาปัตยกรรม (High-level Diagram Concept)**
 
-This will install:
-- `express` - Web framework
-- `sqlite3` - Database driver
-- `nodemon` - Auto-restart server (dev)
-
-### Step 2: Create Database
-
-```bash
-# Navigate to database folder
-cd database
-
-# Create database and run schema
-sqlite3 tasks.db < schema.sql
-
-# Verify (optional)
-sqlite3 tasks.db "SELECT * FROM tasks;"
-
-# Go back to project root
-cd ..
+```graph TD
+    User["Mobile App (Client)"] -->|HTTPS/JSON| API_GW["API Gateway"]
+    
+    subgraph "Microservices Layer"
+        API_GW --> Auth["Auth Service"]
+        API_GW --> Acc["Account Service"]
+        API_GW --> Trans["Transaction Service"]
+        API_GW --> Noti["Notification Service"]
+    end
+    
+    subgraph "Data Layer"
+        Auth --> DB_User[("User DB")]
+        Acc --> DB_Acc[("Account DB")]
+        Trans --> DB_Trans[("Ledger DB")]
+    end
+    
+    subgraph "Message Broker / Event Bus"
+        Trans -.->|PaymentEvent| Kafka["Apache Kafka"]
+        Kafka -.-> Noti
+        Kafka -.-> Audit["Audit Log Service"]
+    end
 ```
 
-You should see 4 sample tasks created.
+**อธิบายทำไมถึงเลือก styles เหล่านี้?**
 
-### Step 3: Implement TODOs
+1. **ทำไมต้อง Microservices?**
+* **Scalability:** Mobile Banking มีฟีเจอร์ที่คนใช้เยอะไม่เท่ากัน เช่น ช่วงสิ้นเดือนคนเข้าเช็คยอดเงินเยอะ เราสามารถเพิ่ม Server ให้กับ `Account Service` ได้โดยไม่ต้องยุ่งกับส่วนอื่น
+* **Maintainability:** หาก `Notification Service` ล่ม ระบบโอนเงินจะยังทำงานได้ตามปกติ (Fault Isolation) ทีมพัฒนาสามารถแก้บั๊กแยกส่วนได้
 
-Open the following files and follow TODO comments:
 
-**Priority Order:**
-1. `server.js` - Parts 1-13 (Backend first!)
-2. `public/app.js` - Parts 1-14 (Frontend)
+2. **ทำไมต้อง Event-Driven?**
+* **Decoupling:** ช่วยลดการรอคอย (Blocking) ตัวอย่างเช่น เมื่อโอนเงินเสร็จ ระบบจะส่ง Event ไปที่ Message Broker เพื่อให้ระบบแจ้งเตือนทำงานต่อ โดยที่ระบบโอนเงินไม่ต้องรอให้แจ้งเตือนเสร็จถึงจะตอบกลับลูกค้า ทำให้ User Experience ลื่นไหล
 
-**Testing Strategy:**
-- Implement backend first, test with Thunder Client
-- Then implement frontend, test in browser
 
-### Step 4: Run the Application
-
-```bash
-# Start server with auto-restart
-npm run dev
-
-# Or without auto-restart
-npm start
-```
-
-Server will run on: `http://localhost:3000`
-
-### Step 5: Test Your Implementation
-
-1. **Backend Testing** (with Thunder Client):
-   - GET `/api/tasks` - Should return all tasks
-   - POST `/api/tasks` - Should create new task
-   - PATCH `/api/tasks/1/status` - Should update status
-   - DELETE `/api/tasks/1` - Should delete task
-
-2. **Frontend Testing** (in browser):
-   - Open `http://localhost:3000`
-   - Create a new task
-   - Move task between columns
-   - Delete a task
-   - Use filter dropdown
 
 ---
 
-## 📝 Implementation Guide
+## 3. Quality Attributes Mapping (การรองรับ QAs) **Architecture นี้รองรับ QAs อย่างไร?**
 
-### 🔴 Part A: Backend (server.js)
+| Quality Attribute | การรองรับด้วยสถาปัตยกรรม |
+| --- | --- |
+| **Security** | **API Gateway** ทำหน้าที่เป็นด่านหน้าในการกรอง Request, ป้องกัน DDoS, และตรวจสอบ Token (OAuth2) ก่อนเข้าถึง Microservices ภายใน |
+| **Availability** | การใช้ **Microservices** ทำให้ระบบมีความยืดหยุ่น หาก Service หนึ่งตาย Service อื่นยังทำงานได้ (Resilience) และสามารถทำ Redundancy (มีหลายเครื่องช่วยกันทำงาน) ได้ง่าย |
+| **Scalability** | Microservices อนุญาตให้ทำ **Horizontal Scaling** (เพิ่มจำนวนเครื่อง) ได้เฉพาะจุดที่คอขวด เช่น ช่วงโปรโมชั่น 11.11 ก็เพิ่มเครื่องให้ Transaction Service |
+| **Modifiability** | ทีมพัฒนาสามารถเลือกใช้เทคโนโลยีต่างกันในแต่ละ Service ได้ (Polyglot) และ Deploy แยกกันได้โดยไม่ต้องปิดระบบใหญ่ |
 
-**Parts to implement:**
+**มี Trade-offs (ข้อแลกเปลี่ยน) อะไรบ้าง?**
 
-1. **Part 1-4:** Setup (imports, app, middleware, database)
-2. **Part 5:** GET all tasks
-3. **Part 6:** GET single task
-4. **Part 7:** POST create task
-5. **Part 8:** PUT update task
-6. **Part 9:** DELETE task
-7. **Part 10:** PATCH update status
-8. **Part 11-13:** Serve frontend & server startup
-
-**Testing Each Part:**
-
-```bash
-# After Part 5 (GET all tasks)
-curl http://localhost:3000/api/tasks
-
-# After Part 7 (POST create task)
-curl -X POST http://localhost:3000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Test Task","priority":"HIGH"}'
-
-# After Part 10 (PATCH update status)
-curl -X PATCH http://localhost:3000/api/tasks/1/status \
-  -H "Content-Type: application/json" \
-  -d '{"status":"DONE"}'
-
-# After Part 9 (DELETE task)
-curl -X DELETE http://localhost:3000/api/tasks/1
-```
+* **Complexity (ความซับซ้อน):** Microservices ดูแลยากกว่า Monolith มาก ต้องมีการจัดการเรื่อง Network, การสื่อสารระหว่าง Service และการ Debug ข้าม Service
+* **Data Consistency (ความถูกต้องของข้อมูล):** เนื่องจาก Database แยกกัน การทำให้ข้อมูลตรงกันทุกที่ทันที (Strong Consistency) ทำได้ยาก ต้องเปลี่ยนมาใช้แบบ **Eventual Consistency** (ข้อมูลจะตรงกันในที่สุด) ซึ่งท้าทายมากสำหรับระบบการเงิน
+* **Latency (ความล่าช้า):** การที่ต้องส่งข้อมูลผ่าน Network ระหว่าง Service หลายตัว อาจทำให้ช้ากว่าการเรียกฟังก์ชันในโปรแกรมเดียวกัน
 
 ---
 
-### 🔵 Part B: Frontend (public/app.js)
+## 4. Lessons Learned (สิ่งที่ได้เรียนรู้) **สิ่งที่เรียนรู้จากการวิเคราะห์?**
 
-**Parts to implement:**
+* **No Silver Bullet:** ไม่มีสถาปัตยกรรมไหนดีที่สุด การเลือก Microservices ดีสำหรับธนาคารขนาดใหญ่แต่แลกมาด้วยความซับซ้อนมหาศาลและการลงทุนด้าน Infrastructure
+* **Criticality of Security:** ในระบบการเงิน Security ไม่ใช่แค่ฟีเจอร์เสริม แต่เป็นรากฐานของสถาปัตยกรรม (Security by Design) ต้องคิดตั้งแต่ API Gateway จนถึง Database
+* **Trade-off Analysis:** ได้เรียนรู้ว่าการเลือก Style หนึ่งจะได้ QAs ด้านหนึ่งมา แต่เสียอีกด้านไป (เช่น ได้ Scalability แต่เสีย Simplicity)
 
-1. **Part 1-2:** State & DOM elements
-2. **Part 3:** Fetch tasks from API
-3. **Part 4:** Create new task
-4. **Part 5:** Update task status
-5. **Part 6:** Delete task
-6. **Part 7-10:** Render functions
-7. **Part 11:** Utility functions
-8. **Part 12-14:** Event listeners & initialization
+**นำไปใช้กับโปรเจกต์ของตัวเองได้อย่างไร?**
 
-**Testing Each Part:**
-
-Use browser console (F12):
-
-```javascript
-// After Part 3 (Fetch tasks)
-fetchTasks(); // Should populate the board
-
-// After Part 4 (Create task)
-createTask({ title: 'Test', priority: 'HIGH' });
-
-// After Part 5 (Update status)
-updateTaskStatus(1, 'DONE');
-
-// After Part 6 (Delete task)
-deleteTask(1);
-```
+* **Modular Design:** ถึงแม้โปรเจกต์นักศึกษาอาจจะไม่ต้องทำ Microservices เต็มรูปแบบ แต่การแบ่งโค้ดเป็น Module ที่ชัดเจน (Separation of Concerns) จะช่วยให้แก้โค้ดง่ายขึ้น
+* **API First:** ออกแบบการเชื่อมต่อระหว่าง Frontend และ Backend ให้ชัดเจนผ่าน API Specification ก่อนเริ่มเขียนโค้ด
+* **Error Handling:** เรียนรู้ที่จะออกแบบระบบให้รองรับความล้มเหลว (Graceful Degradation) เช่น ถ้าดึงข้อมูลรูปภาพไม่ได้ แอปฯ ไม่ควรค้าง แต่ควรแสดง Placeholder แทน
 
 ---
 
-## ⚠️ Common Mistakes to Avoid
-
-### Backend (server.js):
-
-1. ❌ Forgetting to use `app.use(express.json())`
-   - Without this, `req.body` will be undefined
-
-2. ❌ Not handling database errors
-   - Always check for `err` in callbacks
-
-3. ❌ Wrong HTTP status codes
-   - 200: OK (GET, PUT, PATCH)
-   - 201: Created (POST)
-   - 400: Bad Request
-   - 404: Not Found
-   - 500: Server Error
-
-4. ❌ Not validating input
-   - Check `title` is not empty before INSERT
-
-5. ❌ SQL injection (if not using parameterized queries)
-   - ✅ Good: `db.run(sql, [param1, param2])`
-   - ❌ Bad: `db.run(sql + param1 + param2)`
-
-### Frontend (app.js):
-
-1. ❌ Forgetting `await` with `fetch()`
-   - Fetch is asynchronous, must use `await`
-
-2. ❌ Not checking `response.ok`
-   - Always check before parsing JSON
-
-3. ❌ Not escaping HTML
-   - Use `escapeHtml()` to prevent XSS
-
-4. ❌ Forgetting to update `allTasks` array
-   - After create/delete, update local state
-
-5. ❌ Not handling errors
-   - Use try-catch for all async functions
-
----
-
-## 🧪 Testing Checklist
-
-Before submitting, test all features:
-
-### Backend API:
-- [✅] GET `/api/tasks` returns all tasks
-- [✅] GET `/api/tasks/:id` returns single task
-- [✅] GET `/api/tasks/999` returns 404 (not found)
-- [✅] POST `/api/tasks` with valid data creates task
-- [✅] POST `/api/tasks` with empty title returns 400
-- [✅] PUT `/api/tasks/:id` updates task
-- [✅] DELETE `/api/tasks/:id` deletes task
-- [✅] PATCH `/api/tasks/:id/status` updates status
-- [✅] PATCH with invalid status returns 400
-
-### Frontend:
-- [✅] Page loads without errors
-- [✅] Tasks are displayed in correct columns
-- [✅] Can create new task via form
-- [✅] Can move task between columns
-- [✅] Can delete task with confirmation
-- [✅] Filter dropdown works correctly
-- [✅] Task counters update correctly
-- [✅] No console errors in DevTools
-
----
-
-## 📖 Helpful Resources
-
-### SQLite3 Methods:
-
-```javascript
-// Get multiple rows
-db.all(sql, params, (err, rows) => { });
-
-// Get single row
-db.get(sql, params, (err, row) => { });
-
-// Execute INSERT/UPDATE/DELETE
-db.run(sql, params, function(err) {
-    // this.lastID - ID of inserted row
-    // this.changes - Number of rows affected
-});
-```
-
-### Fetch API:
-
-```javascript
-// GET
-const response = await fetch('/api/tasks');
-const data = await response.json();
-
-// POST
-const response = await fetch('/api/tasks', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title: 'New Task' })
-});
-
-// DELETE
-const response = await fetch('/api/tasks/1', {
-    method: 'DELETE'
-});
-
-// PATCH
-const response = await fetch('/api/tasks/1/status', {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status: 'DONE' })
-});
-```
-
----
-
-## 💡 Implementation Tips
-
-### 🎯 Backend Tips:
-
-1. **Start Simple**
-   - Implement GET first (easier)
-   - Then POST, then PUT/DELETE
-
-2. **Test As You Go**
-   - Test each endpoint with Thunder Client
-   - Don't wait until everything is done
-
-3. **Use Console Logs**
-   ```javascript
-   console.log('Request received:', req.body);
-   console.log('Database result:', rows);
-   ```
-
-4. **Check Database**
-   ```bash
-   sqlite3 database/tasks.db "SELECT * FROM tasks;"
-   ```
-
-### 🎨 Frontend Tips:
-
-1. **Use Browser Console**
-   - Call functions directly to test
-   - Check for errors (F12)
-
-2. **Debug Network Calls**
-   - Open DevTools → Network tab
-   - See all API requests/responses
-
-3. **Start With Static**
-   - Create a card manually first
-   - Then make it dynamic
-
-4. **One Function at a Time**
-   - Don't implement everything at once
-   - Test each function separately
-
----
-
-## 🎓 What You'll Learn
-
-### Technical Skills:
-
-- ✅ Node.js & Express.js basics
-- ✅ SQLite database operations
-- ✅ REST API design and implementation
-- ✅ Asynchronous JavaScript (async/await)
-- ✅ DOM manipulation
-- ✅ Event handling
-- ✅ Fetch API usage
-- ✅ Error handling
-- ✅ Security basics (XSS prevention)
-
-### Architectural Concepts:
-
-- ✅ Monolithic Architecture characteristics
-- ✅ Client-Server communication
-- ✅ API endpoint design
-- ✅ Database schema design
-- ✅ Single deployment unit
-- ✅ In-process calls vs network calls
-
----
-
-## 📤 Submission
-
-When you complete the lab:
-
-1. **Test Everything** (use checklist above)
-
-2. **Document Your Work**
-   - Answer reflection questions
-   - Write a good README
-
-3. **Commit to Git**
-   ```bash
-   git init
-   git add .
-   git commit -m "Week 3: Complete monolithic Task Board"
-   ```
-
-4. **Submit**
-   - Push to GitHub, OR
-   - Create ZIP file (exclude node_modules)
-
----
-
-## 🎯 Grading Criteria (10 points)
-
-| Criteria | Points | Description |
-|----------|--------|-------------|
-| **Functionality** | 4 | All features work correctly |
-| **Code Quality** | 2 | Clean code, good practices |
-| **Documentation** | 2 | README + Reflection complete |
-| **Git Usage** | 1 | Meaningful commits |
-| **Creativity** | 1 | Extra features, improved UI |
-
----
-
-## 🆘 Need Help?
-
-### During Lab:
-- Ask TA or instructor
-- Check Discord channel
-- Pair with classmate
-
-### After Lab:
-- Email: thanit@example.com
-- Office Hours: Tue/Thu 14:00-16:00
-- Review lab guide materials
-
----
-
-## 🎉 You Got This!
-
-Remember:
-- **Read TODO comments carefully**
-- **Implement step by step**
-- **Test frequently**
-- **Ask questions when stuck**
-- **Don't copy blindly - understand!**
-
-**Start with backend, then frontend.**
-**Good luck! 💪**
-
----
-
-*Starter Code Version: 1.0*  
-*Last Updated: 2025-01-15*  
-*ENGSE207 Software Architecture - Week 3*

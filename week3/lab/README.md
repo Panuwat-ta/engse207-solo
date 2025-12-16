@@ -41,29 +41,27 @@
 
 **แผนภาพสถาปัตยกรรม (High-level Diagram Concept)**
 
-```mermaid
-graph TD
-    User[Mobile App (Client)] -->|HTTPS/JSON| API_GW[API Gateway]
+```graph TD
+    User["Mobile App (Client)"] -->|HTTPS/JSON| API_GW["API Gateway"]
     
     subgraph "Microservices Layer"
-        API_GW --> Auth[Auth Service]
-        API_GW --> Acc[Account Service]
-        API_GW --> Trans[Transaction Service]
-        API_GW --> Noti[Notification Service]
+        API_GW --> Auth["Auth Service"]
+        API_GW --> Acc["Account Service"]
+        API_GW --> Trans["Transaction Service"]
+        API_GW --> Noti["Notification Service"]
     end
     
     subgraph "Data Layer"
-        Auth --> DB_User[(User DB)]
-        Acc --> DB_Acc[(Account DB)]
-        Trans --> DB_Trans[(Ledger DB)]
+        Auth --> DB_User[("User DB")]
+        Acc --> DB_Acc[("Account DB")]
+        Trans --> DB_Trans[("Ledger DB")]
     end
     
     subgraph "Message Broker / Event Bus"
-        Trans -.->|PaymentEvent| Kafka[Apache Kafka]
+        Trans -.->|PaymentEvent| Kafka["Apache Kafka"]
         Kafka -.-> Noti
-        Kafka -.-> Audit[Audit Log Service]
+        Kafka -.-> Audit["Audit Log Service"]
     end
-
 ```
 
 **อธิบายทำไมถึงเลือก styles เหล่านี้?**
