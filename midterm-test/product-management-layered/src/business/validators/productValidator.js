@@ -32,7 +32,7 @@ class ProductValidator {
     }
     
     validateCategory(category) {
-        const validCategories = ['Electronics', 'Clothing', 'Food', 'Books', 'Toys'];
+        const validCategories = ['Electronics', 'Fashion', 'Food', 'Books', 'Toys'];
         
         if (!validCategories.includes(category)) {
             throw new Error(`Invalid category. Must be one of: ${validCategories.join(', ')}`);

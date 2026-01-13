@@ -31,7 +31,7 @@ async function loadProducts(category = null) {
         const data = await api.getAllProducts(category);
         
         displayProducts(data.products);
-        updateStatistics(data.products, data.totalValue);
+        updateStatistics(data.products, data.statistics.totalValue);
         
         hideLoading();
     } catch (error) {
