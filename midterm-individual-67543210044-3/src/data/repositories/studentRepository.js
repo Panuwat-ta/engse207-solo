@@ -2,7 +2,6 @@
 const db = require('../database/connection');
 
 class StudentRepository {
-    // TODO: Implement findAll
     async findAll(major = null, status = null) {
         return new Promise((resolve, reject) => {
             let sql = 'SELECT * FROM students';
@@ -30,7 +29,6 @@ class StudentRepository {
         });
     }
 
-    // TODO: Implement findById
     async findById(id) {
         return new Promise((resolve, reject) => {
             db.get('SELECT * FROM students WHERE id = ?', [id], (err, row) => {
@@ -40,7 +38,6 @@ class StudentRepository {
         });
     }
 
-    // TODO: Implement create
     async create(studentData) {
         const { student_code, first_name, last_name, email, major } = studentData;
         
@@ -50,7 +47,8 @@ class StudentRepository {
             db.run(sql, [student_code, first_name, last_name, email, major], function(err) {
                 if (err) {
                     reject(err);
-                } else {
+                }
+                else {
                     // Return the created student
                     db.get('SELECT * FROM students WHERE id = ?', [this.lastID], (err, row) => {
                         if (err) reject(err);
@@ -61,13 +59,24 @@ class StudentRepository {
         });
     }
 
-    // TODO: Implement update
     async update(id, studentData) {
-        // ให้นักศึกษาเขียนเอง
-        // return Promise
+        const { student_code, first_name, last_name, email, major } = studentData;
+        return new Promise((resolve, reject) => {
+            const sql = 'UPDATE students SET student_code = ?, first_name = ?, last_name = ?, email = ?, major = ? WHERE id = ?';
+            db.run(sql, [student_code, first_name, last_name, email, major, id], function(err) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    db.get('SELECT * FROM students WHERE id = ?', [id], (err, row) => {
+                        if (err) reject(err);
+                        else resolve(row);
+                    });
+                }
+            });
+        });
     }
 
-    // TODO: Implement updateGPA
     async updateGPA(id, gpa) {
         return new Promise((resolve, reject) => {
             db.run('UPDATE students SET gpa = ? WHERE id = ?', 
@@ -75,7 +84,8 @@ class StudentRepository {
                 function(err) {
                     if (err) {
                         reject(err);
-                    } else {
+                    }
+                    else {
                         // Return updated student
                         db.get('SELECT * FROM students WHERE id = ?', [id], (err, row) => {
                             if (err) reject(err);
@@ -87,15 +97,15 @@ class StudentRepository {
         });
     }
 
-    // TODO: Implement updateStatus
     async updateStatus(id, status) {
         return new Promise((resolve, reject) => {
             db.run('UPDATE students SET status = ? WHERE id = ?', 
-                [status, id], 
+                [status, id],
                 function(err) {
                     if (err) {
                         reject(err);
-                    } else {
+                    }
+                    else {
                         // Return updated student
                         db.get('SELECT * FROM students WHERE id = ?', [id], (err, row) => {
                             if (err) reject(err);
@@ -107,7 +117,6 @@ class StudentRepository {
         });
     }
 
-    // TODO: Implement delete
     async delete(id) {
         return new Promise((resolve, reject) => {
             db.run('DELETE FROM students WHERE id = ?', [id], function(err) {
