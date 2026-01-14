@@ -1,9 +1,11 @@
 // server.js
 const express = require('express');
+const cors = require('cors');
 const studentRoutes = require('./src/presentation/routes/studentRoutes');
 const errorHandler = require('./src/presentation/middlewares/errorHandler');
 
 const app = express();
+app.use(cors());
 
 // Middleware
 app.use(express.json());

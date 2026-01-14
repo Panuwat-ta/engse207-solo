@@ -17,10 +17,10 @@ router.post('/', studentController.createStudent);
 router.put('/:id', studentController.updateStudent);
 
 // PATCH /api/students/:id/gpa
-router.patch('/:id/gpa', studentController.updateGPA);
+router.patch('/:id/gpa', studentController.updateStudentGpa);
 
 // PATCH /api/students/:id/status
-router.patch('/:id/status', studentController.updateStatus);
+router.patch('/:id/status', studentController.updateStudentStatus);
 
 // DELETE /api/students/:id
 router.delete('/:id', studentController.deleteStudent);
