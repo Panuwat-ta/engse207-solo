@@ -1,0 +1,30 @@
+// src/presentation/routes/studentRoutes.js
+const express = require('express');
+const router = express.Router();
+const studentController = require('../controllers/studentController');
+
+// TODO: Define routes
+// GET /api/students
+router.get('/', studentController.getAllStudents);
+
+// GET /api/students/:id
+router.get('/:id', studentController.getStudentById);
+
+// POST /api/students
+router.post('/', studentController.createStudent);
+
+// PUT /api/students/:id
+router.put('/:id', studentController.updateStudent);
+
+// PATCH /api/students/:id/gpa
+router.patch('/:id/gpa', studentController.updateStudentGpa);
+
+// PATCH /api/students/:id/status
+router.patch('/:id/status', studentController.updateStudentStatus);
+
+// DELETE /api/students/:id
+router.delete('/:id', studentController.deleteStudent);
+
+// ให้นักศึกษาเขียนเองต่อที่นี่
+
+module.exports = router;
