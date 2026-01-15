@@ -20,5 +20,5 @@ app.use(errorHandler);
 // Start server
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Student Management System running on http://localhost:${PORT}`);
+    console.log(`Student Management System running on http://192.168.56.110:${PORT}`);
 });
