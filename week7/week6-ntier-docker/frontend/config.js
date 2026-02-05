@@ -1,5 +1,5 @@
 // config.js - สามารถเปลี่ยน URL ได้ง่าย
 const CONFIG = {
     // เปลี่ยน URL นี้เป็น API URL ของคุณ
-    API_URL: 'engse207-solo-production.up.railway.app/api'
+    API_URL: 'https://engse207-solo-production.up.railway.app/api'
 };
