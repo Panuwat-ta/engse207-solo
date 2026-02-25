@@ -11,8 +11,9 @@ class TaskController {
 
     async getTaskById(req, res, next) {
         try {
-            const task = await taskService.getTaskById(parseInt(req.params.id));
-            res.json({ success: true, data: task });
+            const result = await taskService.getTaskById(parseInt(req.params.id));
+            res.set('X-Cache-Status', result.source);
+            res.json({ success: true, data: result.data });
         } catch (error) { next(error); }
     }
 

@@ -19,7 +19,7 @@ const INSTANCE_ID = `app-${os.hostname().slice(-4)}-${Math.random().toString(36)
 console.log(`\n🆔 Instance ID: ${INSTANCE_ID}\n`);
 
 // Middleware
-app.use(cors());
+app.use(cors({ exposedHeaders: ['X-Cache-Status'] }));
 app.use(express.json());
 app.use(morgan('short'));
 

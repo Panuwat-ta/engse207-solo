@@ -37,7 +37,7 @@ class TaskService {
     // GET task by ID — ใช้ Cache
     async getTaskById(id) {
         const cached = await getCache(CACHE_KEYS.TASK_BY_ID(id));
-        if (cached) return cached;
+        if (cached) return { data: cached, source: 'HIT' };
 
         const task = await taskRepository.findById(id);
         if (!task) {
@@ -46,8 +46,9 @@ class TaskService {
             throw error;
         }
 
-        await setCache(CACHE_KEYS.TASK_BY_ID(id), task.toJSON(), 60);
-        return task.toJSON();
+        const json = task.toJSON();
+        await setCache(CACHE_KEYS.TASK_BY_ID(id), json, 60);
+        return { data: json, source: 'MISS' };
     }
 
     // POST create task — Invalidate Cache
